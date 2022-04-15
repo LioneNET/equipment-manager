@@ -5,15 +5,15 @@
 Фронт написан на vue3
 Бек на laravel 9
 
-![alt text](/assets/1.JPG)
+![alt text](/assets/1.png)
 
-![alt text](/assets/2.JPG)
+![alt text](/assets/2.png)
 
-![alt text](/assets/3.JPG)
+![alt text](/assets/3.png)
 
-![alt text](/assets/4.JPG)
+![alt text](/assets/4.png)
 
-![alt text](/assets/5.JPG)
+![alt text](/assets/5.png)
 
 ## Фронт
 
