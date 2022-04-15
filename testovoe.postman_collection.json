@@ -1,0 +1,392 @@
+{
+	"info": {
+		"_postman_id": "1364147b-80ae-4fd1-a3b8-db92b80c19b2",
+		"name": "testovoe",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Delete equipment",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}equipment/2",
+					"host": [
+						"{{host}}equipment"
+					],
+					"path": [
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "requiest equipment",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "equipment_id",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{host}}equipment",
+					"host": [
+						"{{host}}equipment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "mail@mail.ru",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{host}}login",
+					"host": [
+						"{{host}}login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}logout",
+					"host": [
+						"{{host}}logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "requiest equipment types",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "{{host}}equipment_types",
+					"host": [
+						"{{host}}equipment_types"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "equipments add",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"equipments\": [\r\n        {\r\n            \"equipment_type\": 10,\r\n            \"equipment_items\": [\r\n                {\r\n                    \"serial_number\": \"AAAAAAAAAAAAAAAAAAAA\",\r\n                    \"note\": \"ssssss\"\r\n                },\r\n                {\r\n                    \"serial_number\": \"rrrrrrrrrrrrr\",\r\n                    \"note\": \"ssssss\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"equipment_type\": 11,\r\n            \"equipment_items\": [\r\n                {\r\n                    \"serial_number\": \"ccccccccc\",\r\n                    \"note\": \"ssssss\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"equipment_type\": 12,\r\n            \"equipment_items\": [\r\n                {\r\n                    \"serial_number\": \"XXXXXXXXXX\",\r\n                    \"note\": \"ssssss\"\r\n                },\r\n                {\r\n                    \"serial_number\": \"dddddddddd\",\r\n                    \"note\": \"ssssss\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"equipment_type\": 10,\r\n            \"equipment_items\": [\r\n                {\r\n                    \"serial_number\": \"gadfagasdfasdf\",\r\n                    \"note\": \"ssssss\"\r\n                },\r\n                {\r\n                    \"serial_number\": \"asdfasdfa\",\r\n                    \"note\": \"ssssss\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}equipment",
+					"host": [
+						"{{host}}equipment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "equipments add1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"equipments\": [\r\n        {\r\n            \"equipment_type\": 10,\r\n            \"equipment_items\": [\r\n                {\r\n                    \"note\": \"\",\r\n                    \"serial_number\": \"ZZZZZZZZZZZZZZZZ\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"equipment_type\": 10,\r\n            \"equipment_items\": [\r\n                {\r\n                    \"note\": \"\",\r\n                    \"serial_number\": \"sssssssssssssssssssss\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}equipment",
+					"host": [
+						"{{host}}equipment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Request",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 2,\r\n    \"serial\": \"AAAAAAAAAF\",\r\n    \"note\": \"ddd\",\r\n    \"equipment_type_id\": 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}equipment/4",
+					"host": [
+						"{{host}}equipment"
+					],
+					"path": [
+						"4"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://testovoe.loc/api/",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "23|9yrYaCYSaq3ZXXWtu0wUKXB2OIEH32QzrQAhUbbS",
+			"type": "string"
+		}
+	]
+}
