@@ -46,17 +46,17 @@ export default {
     return {
       errorMessage: '',
       isValidItems: [],
-      btnIsDisable: false,
+      btnIsDisable: true,
       loginValid: {
         name: 'login',
         isValid: true,
-        value: "mail@mail.ru",
+        value: "",
         rules: /(\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,6})/,
       },
       passwordValid: {
         name: 'password',
         isValid: true,
-        value: "password",
+        value: "",
         rules: /([A-Za-z\d]{8,16})/,
       },
     };

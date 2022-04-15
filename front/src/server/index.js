@@ -3,7 +3,7 @@ import axios from 'axios';
 const api = () => {
   const token = JSON.parse(localStorage.getItem('token'));
   const authHeader = token ? { Authorization: 'Bearer ' + token.accessToken } : {}
-  const API_URL = 'http://testovoe.loc/api';
+  const API_URL = 'http://equipment-manager/back/public/api';
   const $api = axios.create({
     baseURL: API_URL,
     headers: {
