@@ -24,7 +24,6 @@ class EquipmentUpdateRequest extends FormRequest
   public function rules()
   {
     return [
-      "id" => "required|integer|exists:App\Models\Equipment,id",
       "equipment_type_id" => "required|integer|exists:App\Models\EquipmentType,id",
       "serial" => "required|string"
     ];

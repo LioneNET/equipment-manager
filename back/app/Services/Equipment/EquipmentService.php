@@ -9,7 +9,7 @@ use Exception;
 
 class EquipmentService
 {
-   /**
+  /**
    * поиск оборудования
    */
   public function getEquipments(Request $request)
@@ -95,42 +95,48 @@ class EquipmentService
           }
         }
       }
-      return response()->json($response, 200);
+      return $response;
     }
   }
 
- /**
-   * обновление
+  /**
+   * обновление данных
+   * 
+   * @return array|null
    */
   public function updateEquipments(Request $request)
   {
-    $id = $request->get('id');
+    $id = $request->route('id');
     $equipmentTypeId = $request->get('equipment_type_id');
     $serial = $request->get('serial');
     $note = $request->get('note');
     $errors = false;
-
+    $equepment = Equipment::find($id);
     $equipmentType = EquipmentType::find($equipmentTypeId);
+
+    if (!$equepment) {
+      return null;
+    }
+
     if (preg_match(self::createRegExp($equipmentType->serial_mask), $serial)) {
-      $equepment = Equipment::find($id);
-      if($equepment->serial !== $serial) {
+      if ($equepment->serial !== $serial) {
         $serialCheck = Equipment::where('serial', $serial)->get()->toArray();
-        if(!count($serialCheck)) {
+        if (!count($serialCheck)) {
           $equepment->serial = $serial;
-        }else {
+        } else {
           $errors = ['error' => "Серийный номер уже есть в базе"];
         }
       }
       $equepment->equipment_id = $equipmentTypeId;
       $equepment->note = $note ?? $equepment->note;
-      if(!$errors) {
+      if (!$errors) {
         $equepment->save();
-        return response()->json(['success' => 'Данные обновлены!']);
+        return ['success' => 'Данные обновлены!'];
       }
     } else {
-      return response()->json(['error' => "Серйиный номер {$serial} не соответствует маске оборудования!"]);
-    }  
-    return response()->json($errors);
+      return ['error' => "Серйиный номер {$serial} не соответствует маске оборудования!"];
+    }
+    return $errors;
   }
 
   /**
@@ -139,7 +145,7 @@ class EquipmentService
   public function deleteEquipment(Request $request)
   {
     Equipment::where('id', $request->route('id'))->delete();
-    return response()->json(['success' => 'Оборудование удалено'], 200);
+    return ['success' => 'Оборудование удалено'];
   }
 
   /**

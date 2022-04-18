@@ -4,7 +4,9 @@ namespace App\Http\Resources;
 
 use App\Services\Equipment\EquipmentService;
 use Illuminate\Http\Resources\Json\JsonResource;
-
+/**
+ * Работа с ресурсами типов оборудований
+ */
 class EquipmentTypeResource extends JsonResource
 {
     /**
