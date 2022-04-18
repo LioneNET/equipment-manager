@@ -5,8 +5,14 @@ namespace App\Services\Equipment;
 use App\Models\EquipmentType;
 use Illuminate\Http\Request;
 
+/**
+ * Работа с типами оборудований
+ */
 class EquipmentTypeService
 {
+  /**
+   * поиск по сответсвующим ключам
+   */
   public function getEquipments(Request $request)
   {
     $equipment = EquipmentType::query();

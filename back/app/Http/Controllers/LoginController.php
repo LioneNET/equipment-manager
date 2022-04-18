@@ -3,32 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
-use App\Models\User;
+use App\Http\Resources\LoginResource;
+use App\Services\Auth\LoginService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
+/**
+ * Контроллер по работе с авторизацией
+ */
 class LoginController extends Controller
 {
+  /**
+   * Запрос авторизации
+   */
   public function login(LoginRequest $request)
   {
-    $user = User::query()->where('email', $request->input('email'))->first();
-
-    if (!$user || !Hash::check($request->input('password'), $user->password)) {
-      return response()->json([
-        'error' => "Неверный маил или пароль"
-      ], 401);
-    }
-
-    return response()->json([
-      'token' => $user->createToken('myToker')->plainTextToken
-    ]);
+    $loginService = new LoginService();
+    return new LoginResource($loginService->autorization($request));
   }
 
+  /**
+   * выход
+   */
   public function logout(Request $request)
   {
-    Auth::guard('web')->logout();
-    $request->user()->tokens()->delete();
-    return response()->json([], 204);
+    $loginService = new LoginService();
+    return $loginService->logout($request);
   }
 }

@@ -4,18 +4,26 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * ресурсы оборудования
+ */
 class EquipmentResource extends JsonResource
 {
+  public static $wrap = 'data';
   /**
-   * Transform the resource into an array.
+   * Возвращает набор полей оборудования, либо пустой массив
    *
    * @param  \Illuminate\Http\Request  $request
-   * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+   * @return array
    */
   public function toArray($request)
   {
     if ($this->resource == null) {
       return [];
+    } else if (is_array($this->resource)) {
+      //чтобы не ранять фронт
+      self::$wrap = '';
+      return $this->resource;
     }
 
     return [
