@@ -7,7 +7,7 @@
 
 ![alt text](/assets/6.png)
 
-![alt text](/assets/1.png)
+![alt text](/assets/1.jpg)
 
 ![alt text](/assets/2.png)
 
