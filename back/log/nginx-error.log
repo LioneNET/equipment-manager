@@ -1,0 +1,1 @@
+2022/09/13 10:58:04 [error] 9#9: *1 upstream timed out (110: Operation timed out) while reading response header from upstream, client: 172.18.0.1, server: , request: "GET / HTTP/1.1", upstream: "fastcgi://172.18.0.2:9000", host: "localhost:8080"
