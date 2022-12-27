@@ -14,23 +14,23 @@ class LoginService
 {
   /**
    * Автроризация пользователя
-   * 
+   *
    * возвращает пользователя либо null если пользователь не найден
-   * 
+   *
    * @return null | \App\Models\User
    */
   public function autorization(Request $request)
   {
     $user = User::query()->where('email', $request->input('email'))->first();
     if (!$user || !Hash::check($request->input('password'), $user->password)) {
-      return null;
+        return null;
     }
     return $user;
   }
 
   /**
    * Выходим и чистим все токены
-   * 
+   *
    * @return array
    */
   public function logout(Request $request)

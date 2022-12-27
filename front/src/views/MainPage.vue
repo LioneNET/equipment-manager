@@ -1,15 +1,16 @@
-<script setup>
-  import EquipmentSearch from '@/components/equipments/EquipmentSearch.vue'
-</script>
-
 <template>
-  <EquipmentSearch />
+  <div>
+    <Header/>
+    <router-view/>
+  </div>
 </template>
 
 <script>
+import Header from "@/components/Header.vue"
 
 export default {
-
+  name: 'MainPage',
+  components: {Header}
 }
 </script>
 

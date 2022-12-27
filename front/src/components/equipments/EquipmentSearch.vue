@@ -1,10 +1,3 @@
-<script setup>
-import SearchIcon from '@/components/icons/SearchIcon.vue'
-import Equipment from './Equipment.vue'
-import Paginator from '../Paginator.vue'
-
-</script>
-
 <template>
   <div class="row">
     <div class="col-md-12 p-3">
@@ -18,13 +11,13 @@ import Paginator from '../Paginator.vue'
               <label class="input-group-text" for="inputGroupSelect02">Тип оборудования</label>
               <select v-model="searchByequipmentType" class="form-select" id="inputGroupSelect02">
                 <option :value="'*'">Все</option>
-                <option v-for="item in equipmentTypes" :value="item.id" :key="item.id">{{item.name}}</option>
+                <option v-for="item in equipmentTypeData.data" :value="item.id" :key="item.id">{{item.name}}</option>
               </select>
             </div>
 
             <div class="input-group mb-3">
-              <label class="input-group-text" for="inputGroupSelect02">Тип поиска</label>
-              <select v-model="searchType" class="form-select" id="inputGroupSelect02">
+              <label class="input-group-text" for="inputGroupSelect03">Тип поиска</label>
+              <select v-model="searchType" class="form-select" id="inputGroupSelect03">
                 <option value="serial">Серийный номер</option>
                 <option value="note">Примечание</option>
                 <option value="id">Код оборудования (ID)</option>
@@ -33,12 +26,16 @@ import Paginator from '../Paginator.vue'
 
             <div class="input-group flex-nowrap  mb-3">
               <span class="input-group-text" id="addon-wrapping"><SearchIcon /></span>
-              <input v-model="inputText" type="text" class="form-control" placeholder="Поиск" aria-label="Username" aria-describedby="addon-wrapping">
+              <input
+                @input="({target}) => searchHandler(target.value)"
+                type="text"
+                class="form-control"
+                placeholder="Поиск">
             </div>
           </div>
 
           <div class="search-items">
-            <table v-if="equipmentItems.length" class="table table-hover">
+            <table v-if="equipmentData.data.length" class="table table-hover">
               <thead>
                 <tr>
                   <th scope="col">ID</th>
@@ -50,7 +47,7 @@ import Paginator from '../Paginator.vue'
                 </tr>
               </thead>
               <tbody>
-                <Equipment v-for="item in equipmentItems" :key="item.id" v-bind:item="item" />
+                <Equipment v-for="item in equipmentData.data" :key="item.id" v-bind:item="item" />
               </tbody>
             </table>
             <div v-else class="empty-data">
@@ -61,7 +58,7 @@ import Paginator from '../Paginator.vue'
           </div>
 
           <div class="paginator">
-            <Paginator v-if="paginatorReady" />
+            <Paginator v-if="isShowPagination" />
           </div>
         </div>
       </div>
@@ -70,7 +67,19 @@ import Paginator from '../Paginator.vue'
 </template>
 
 <script>
+  import {EQUIPMENT_MODULE} from '@/stores/const'
+  import {mapActions, mapGetters} from 'vuex'
+  import SearchIcon from '@/components/icons/SearchIcon.vue'
+  import Equipment from './Equipment.vue'
+  import Paginator from '../Paginator.vue'
+
   export default {
+    name: 'EquipmentSearch',
+    components: {
+      SearchIcon,
+      Equipment,
+      Paginator
+    },
     data() {
       return {
         searchType: 'serial',
@@ -79,39 +88,38 @@ import Paginator from '../Paginator.vue'
         debounceTimer: null
       }
     },
-    watch: {
-      inputText(value) {
-
-        if(this.debounceTimer) {
-          clearTimeout(this.debounceTimer)
-        }
-        this.debounceTimer = setTimeout(() => {
-          let query = ''
-          if(value.trim().length >= 1) {
-            query = {
-              ...(this.searchByequipmentType !== '*' ? {equipment_id: this.searchByequipmentType} : {})
-            }
-            query[this.searchType] = value
-          }
-          this.$store.dispatch('fetchEquipments', query)
-        },500)
-      }
-    },
     computed: {
-      equipmentTypes() {
-        return this.$store.state.equipment.equipmentTypes
-      },
-      equipmentItems() {
-        return this.$store.state.equipment.equipments
-      },
-      paginatorReady() {
-        return !!this.$store.state.equipment.equipmentsPagination
+      ...mapGetters({
+        equipmentData: EQUIPMENT_MODULE.GET_EQUIPMENTS,
+        equipmentTypeData: EQUIPMENT_MODULE.GET_EQUIPMENT_TYPES
+      }),
+      isShowPagination() {
+        return this.equipmentData.meta.total > this.equipmentData.meta.per_page
       }
     },
-    created(){
-      this.$store.dispatch('fetchEquipmentTypes', '')
-      this.$store.dispatch('fetchEquipments', '')
-    }
+    mounted() {
+      this.initFormData()
+    },
+    methods: {
+      ...mapActions({
+        fetchEquipment: EQUIPMENT_MODULE.FETCH_EQUIPMENT_DATA,
+        fetchEquipmentType: EQUIPMENT_MODULE.FETCH_EQUIPMENT_TYPE_DATA
+      }),
+      async initFormData() {
+        await this.fetchEquipmentType()
+        await this.fetchEquipment()
+      },
+      searchHandler(value) {
+        clearTimeout(this.timerID)
+        this.timerID = setTimeout(async () => {
+          const query = {
+            ...(this.searchByequipmentType !== '*' ? {equipment_id: this.searchByequipmentType} : {})
+          }
+          query[this.searchType] = value
+          await this.fetchEquipment(query)
+        }, 450)
+      }
+    },
   }
 </script>
 

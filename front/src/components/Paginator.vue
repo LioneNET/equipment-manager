@@ -23,7 +23,11 @@
 </template>
 
 <script>
+import {mapActions, mapGetters} from "vuex";
+import {EQUIPMENT_MODULE} from '@/stores/const'
+
 export default {
+  name: 'Paginator',
   data() {
     return {
       active: '1',
@@ -36,11 +40,11 @@ export default {
       links: []
     }
   },
-  created() {
-    const pageMeta = this.$store.state.equipment.equipmentsPagination
-    this.lastPage = pageMeta.last_page
-    this.currentPage = pageMeta.current_page;
-    this.links = [...pageMeta.links.slice(1, pageMeta.links.length - 1)];
+  mounted() {
+    const meta = this.equipmentData.meta
+    this.lastPage = meta.last_page
+    this.currentPage = meta.current_page;
+    this.links = [...meta.links.slice(1, meta.links.length - 1)];
 
     let data = [...this.links.slice(0, this.currentPage + this.pagesAround)];
     const pages = [...Array(data.length).keys()];
@@ -56,8 +60,16 @@ export default {
       this.showPagination = true
     }
   },
+  computed: {
+    ...mapGetters({
+      equipmentData: EQUIPMENT_MODULE.GET_EQUIPMENTS,
+    })
+  },
   methods: {
-    nextPage(page) {
+    ...mapActions({
+      fetchEquipment: EQUIPMENT_MODULE.FETCH_EQUIPMENT_DATA,
+    }),
+    async nextPage(page) {
       this.currentPage = page
       const data = [...this.links.slice(0, this.currentPage + this.pagesAround)];
       const pages = [...Array(data.length).keys()];
@@ -69,7 +81,7 @@ export default {
           : pages.length;
       this.arraySlice = data.slice(start, end);
       this.active = page
-      this.$store.dispatch('fetchEquipments', {page})
+      await this.fetchEquipment({page})
     }
   }
 };

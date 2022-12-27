@@ -1,6 +1,3 @@
-<script setup>
-import $api from '@/server';
-</script>
 <template>
 <div class="row">
   <div class="col-md-12 p-3">
@@ -24,30 +21,23 @@ import $api from '@/server';
               <p>Z –символ  из списка: “-“, “_”, “@”.</p>
             </div>
           </div>
-
-          <div v-if="errorMessage" class="alert alert-danger" role="alert">
-            {{errorMessage}}
-          </div>
-          <div v-if="successMessage" class="alert alert-success" role="alert">
-            {{successMessage}}
-          </div>
           <div class="input-group flex-wrap mb-3">
             <label class="input-group-text" for="inputGroupSelect02">Тип оборудования</label>
-            <select v-model="selectedTypeID" v-on:change="changeType" class="form-select" id="inputGroupSelect02">
+            <select v-model="selectedTypeID" class="form-select" id="inputGroupSelect02">
               <option selected disabled :value="null">Выберите</option>
-              <option v-for="types in equipmentTypes" :value="types.id" :key="types.id">{{types.name}}</option>
+              <option v-for="types in equipmentTypes.data" :value="types.id" :key="types.id">{{types.name}}</option>
             </select>
           </div>
 
           <div class="input-group flex-nowrap  mb-3">
-            <span class="input-group-text" id="addon-wrapping">Серийный номер маска {{this.serial_mask}}</span>
+            <span class="input-group-text">Серийный номер маска {{this.serial_mask}}</span>
             <input type="text" class="form-control" 
               v-model="item.serial"
               placeholder="Серийный номер">
           </div>
 
           <div class="input-group flex-nowrap  mb-3">
-            <span class="input-group-text" id="addon-wrapping">Примечание</span>
+            <span class="input-group-text">Примечание</span>
             <input v-model="item.note" type="text" class="form-control" placeholder="Примечание">
           </div>
       </div>
@@ -57,7 +47,10 @@ import $api from '@/server';
 </template>
 
 <script>
+  import {mapActions, mapGetters} from "vuex";
+  import {EQUIPMENT_MODULE, ALERT_MODULE} from '@/stores/const'
   export default {
+    name: 'EquipmentEdit',
     data() {
       return {
         item: {},
@@ -68,62 +61,55 @@ import $api from '@/server';
       }
     },
     computed: {
-      equipmentTypes() {
-        return this.$store.state.equipment.equipmentTypes
-      }
-    },
-    watch: {
-      selectedTypeID() {
-        this.item.equipment_id = this.selectedTypeID
-      }
+      ...mapGetters({
+        equipmentData: EQUIPMENT_MODULE.GET_EQUIPMENT,
+        equipmentPut: EQUIPMENT_MODULE.GET_PUT_EQUIPMENT_DATA,
+        equipmentTypes: EQUIPMENT_MODULE.GET_EQUIPMENT_TYPES
+      }),
     },
     methods: {
-      async fetchItem() {
-        try {
-          const res = await $api().get(`equipment/${this.$route.params.id}`)
-          if(!res.data.data['id']) {
-            this.$router.push('/')
-          }
-          this.item = res.data.data
-          this.selectedTypeID = res.data.data.equipment_id
-          this.serial_mask = res.data.data.equipment_type[0].serial_mask
-        } catch(e) {
-          console.log(e)
-        }
+      ...mapActions({
+        fetchEquipment: EQUIPMENT_MODULE.SHOW_EQUIPMENT_DATA,
+        putEquipment: EQUIPMENT_MODULE.PUT_EQUIPMENT_DATA,
+        deleteEquipment: EQUIPMENT_MODULE.DELETE_EQUIPMENT_DATA,
+        fetchEquipmentTypes: EQUIPMENT_MODULE.FETCH_EQUIPMENT_TYPE_DATA,
+        addAlert: ALERT_MODULE.ADD_ALERT,
+      }),
+      async initData() {
+        await this.fetchEquipment(this.$route.params.id)
+        await this.fetchEquipmentTypes()
+        this.item = this.equipmentData.data
+        this.selectedTypeID = this.equipmentData.data?.equipment_id
+        this.serial_mask = this.equipmentData.data?.equipment_type[0]?.serial_mask
       },
       async saveItems() {
-        this.errorMessage = false
-        this.successMessage = false
-        try {
-          const res = await $api().put(`equipment/${this.item.id}`,{
+        const res = await this.putEquipment({
+          id: this.item.id,
+          data: {
             id: this.item.id,
             equipment_type_id: this.item.equipment_id,
             serial: this.item.serial,
             note: this.item.note
-          })
-          if(res.data['error']) {
-            this.errorMessage = res.data['error']
-          }else {
-            this.successMessage = res.data['success']
           }
-        } catch(e) {
-          console.log(e)
+        })
+        if(res === true) {
+          const key = Object.keys(this.equipmentPut)[0]
+          const message = this.equipmentPut[key]
+          this.addAlert({
+            id: Date.now(),
+            type: `alert-${key}`,
+            message: message
+          })
+          await this.$router.push('/')
         }
       },
       async deleteItems() {
-        try {
-          await $api().delete(`equipment/${this.item.id}`)
-          this.$router.push('/')
-        } catch(e) {
-          console.log(e)
-        }
+        await this.deleteEquipment(this.item.id)
+        await this.$router.push('/')
       },
     },
-    created() {
-      if(!this.$store.state.equipment.equipmentTypes.length) {
-        this.$store.dispatch('fetchEquipmentTypes')
-      }
-      this.fetchItem()
+    mounted() {
+      this.initData()
     }
   }
 </script>
