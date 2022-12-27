@@ -3,18 +3,15 @@
     <div class="card">
       <h5 class="card-header">Авторизация</h5>
       <div class="card-body">
-        <div v-if="errorMessage" class="alert alert-danger d-flex justify-content-between" role="alert">
-          {{errorMessage}}
-          <button type="button" class="btn-close" v-on:click="()=>errorMessage=''"></button>
-        </div>
+        <Alert />
         <div class="row">
           <label for="staticEmail" class="col-sm-2 form-label">Email</label>
           <div class="col-sm-10 valid-filed">
             <input type="text" class="form-control" 
-              :class="!loginValid.isValid && 'is-invalid'" id="staticEmail" 
-              v-model="inputLogin" />
-            <div class="invalid-feedback" :class="!loginValid.isValid && 'd-block' ">
-              Введите корректный мали
+              :class="v$.inputLogin.$error && 'is-invalid'" id="staticEmail"
+              v-model="v$.inputLogin.$model" />
+            <div v-if="v$.inputLogin.$error" class="invalid-feedback d-block">
+              <p v-for="error in v$.inputLogin.$errors" :key="error.$uid">{{error.$message}}</p>
             </div>
           </div>
         </div>
@@ -22,15 +19,15 @@
           <label for="inputPassword" class="col-sm-2 form-label">Пароль</label>
           <div class="col-sm-10 valid-filed">
             <input type="password" class="form-control" 
-              :class="!passwordValid.isValid && 'is-invalid'" id="inputPassword"
+              :class="v$.inputPassword.$error && 'is-invalid'" id="inputPassword"
               v-model="inputPassword" />
-            <div class="invalid-feedback" :class="!passwordValid.isValid && 'd-block' ">
-              Введите корректный пароль
+            <div v-if="v$.inputPassword.$error" class="invalid-feedback d-block">
+              <p v-for="error in v$.inputPassword.$errors" :key="error.$uid">{{error.$message}}</p>
             </div>
           </div>
         </div>
         <div class="row-auto">
-          <button :disabled="btnIsDisable || isLoading" type="button" class="btn btn-primary" v-on:click="handleLogin">
+          <button :disabled="isLoading" type="button" class="btn btn-primary" v-on:click="handleLogin">
             <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             Войти
           </button>
@@ -41,79 +38,58 @@
 </template>
 
 <script>
+import {AUTH_MODULE} from '@/stores/const'
+import {mapActions} from 'vuex'
+import { useVuelidate } from '@vuelidate/core'
+import { required, helpers } from '@vuelidate/validators'
+import Alert from "../components/Alert.vue";
+
 export default {
+  name: 'LoginView',
+  components: {Alert},
+  setup () {
+    return { v$: useVuelidate() }
+  },
   data() {
     return {
-      errorMessage: '',
-      isValidItems: [],
-      btnIsDisable: true,
-      loginValid: {
-        name: 'login',
-        isValid: true,
-        value: "",
-        rules: /(\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,6})/,
-      },
-      passwordValid: {
-        name: 'password',
-        isValid: true,
-        value: "",
-        rules: /([A-Za-z\d]{8,16})/,
-      },
+      isLoading: false,
+      inputLogin: null,
+      inputPassword: null,
     };
   },
   computed: {
-    isLoading() {
-      return this.$store.state.auth.isLoading
-    },
-    inputLogin: {
-      set(value) {
-        this.loginValid.value = value
-        this.checkRules(this.loginValid)
-      },
-      get() {
-        return this.loginValid.value
-      }
-    },
-    inputPassword: {
-      set(value) {
-        this.passwordValid.value = value
-        this.checkRules(this.passwordValid)
-      },
-      get() {
-        return this.passwordValid.value
-      }
-    },
   },
   methods: {
-    checkRules(field) {
-      if(!field.value.match(field.rules)) {
-        field.isValid = false
-        this.isValidItems = [...this.isValidItems.filter(i => field.name !== i)]
-      } else {
-        field.isValid = true
-        if(this.isValidItems.indexOf(field.name) === -1) {
-          this.isValidItems.push(field.name)
-        }
-      }
-
-      if(this.isValidItems.length > 1) {
-        this.btnIsDisable = false
-      } else {
-        this.btnIsDisable = true
-      }
-    },
+    ...mapActions({
+      fetchLogin: AUTH_MODULE.FETCH_AUTH,
+    }),
     async handleLogin() {
-      try {
-        await this.$store.dispatch("login", {
+      this.v$.$touch()
+      if(!this.v$.$invalid) {
+        this.isLoading = true
+        const res = await this.fetchLogin({
           email: this.inputLogin,
           password: this.inputPassword.trim()
         })
-        this.$router.push('/')
-      } catch (e) {
-        this.errorMessage = e.data['error']
+        if(res === true) {
+          location.href = '/'
+        }
+        this.isLoading = false
       }
     },
-  }
+  },
+  validations() {
+    const requiredMessage = 'Поле обязательно для заполнения'
+    return {
+      inputLogin: {
+        required: helpers.withMessage(requiredMessage, required)
+      },
+      inputPassword: {
+        required: helpers.withMessage(requiredMessage, required)
+      },
+    }
+  },
+
 };
 </script>
 

@@ -22,7 +22,7 @@ class LoginResource extends JsonResource
   public function toArray($request)
   {
     if ($this->resource == null) {
-      $this->status = 401;
+      $this->status = 418;
       return ['error' => "Неверный маил или пароль"];
     }
     return [
@@ -32,7 +32,7 @@ class LoginResource extends JsonResource
 
   /**
    * Устанавливаем стаус запроса
-   * 
+   *
    * @return void
    */
   public function withResponse($request, $response)

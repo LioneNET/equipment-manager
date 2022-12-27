@@ -101,7 +101,7 @@ class EquipmentService
 
   /**
    * обновление данных
-   * 
+   *
    * @return array|null
    */
   public function updateEquipments(Request $request)
@@ -134,7 +134,7 @@ class EquipmentService
         return ['success' => 'Данные обновлены!'];
       }
     } else {
-      return ['error' => "Серйиный номер {$serial} не соответствует маске оборудования!"];
+      return ['danger' => "Серйиный номер {$serial} не соответствует маске оборудования!"];
     }
     return $errors;
   }
@@ -154,8 +154,8 @@ class EquipmentService
    * A – прописная  буква латинского  алфавита
    * a – строчная буква латинского  алфавита
    * X – прописная  буква латинского  алфавита  либо цифра  от 0 до 9
-   * Z –символ  из списка: “-“, “_”, “@”. 
-   * 
+   * Z –символ  из списка: “-“, “_”, “@”.
+   *
    * @param  string  $mask маска
    * @return string сформированное регулярное
    */

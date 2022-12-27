@@ -9,12 +9,12 @@
           <label class="input-group-text" for="inputGroupSelect02">Тип оборудования</label>
           <select v-model="selectedTypeID" v-on:change="changeType" class="form-select" id="inputGroupSelect02">
             <option selected disabled :value="null">Выберите</option>
-            <option v-for="types in equipmentTypes" :value="types.id" :key="types.id">{{types.name}}</option>
+            <option v-for="types in equipmentTypes.data" :value="types.id" :key="types.id">{{types.name}}</option>
           </select>
         </div>
 
         <div class="input-group flex-nowrap  mb-3">
-          <span class="input-group-text" id="addon-wrapping">Серийный номер {{selectedType && `маска: ${selectedType.serial_mask}`}}</span>
+          <span class="input-group-text">Серийный номер {{selectedType && `маска: ${selectedType.serial_mask}`}}</span>
           <input type="text" class="form-control"
             :disabled="!selectedTypeID"
             v-model="equipmentSerial" 
@@ -23,7 +23,7 @@
         </div>
 
         <div class="input-group flex-nowrap  mb-3">
-          <span class="input-group-text" id="addon-wrapping">Примечание</span>
+          <span class="input-group-text">Примечание</span>
           <input v-model="equipmentNote" type="text" class="form-control" placeholder="Примечание">
         </div>
     </div>
@@ -31,7 +31,10 @@
 </template>
 
 <script>
+import {mapActions, mapGetters} from "vuex";
+  import {EQUIPMENT_MODULE} from '@/stores/const'
   export default {
+    name: 'EquipmentFormItem',
     props: {
       item: Object
     },
@@ -45,9 +48,9 @@
       }
     },
     computed: {
-      equipmentTypes() {
-        return this.$store.state.equipment.equipmentTypes
-      }
+      ...mapGetters({
+        equipmentTypes: EQUIPMENT_MODULE.GET_EQUIPMENT_TYPES
+      }),
     },
     watch: {
       equipmentSerial() {
@@ -58,18 +61,24 @@
         this.$emit('changeItem', {...this.item, note: this.equipmentNote})
       }
     },
-    created() {
-      if(!this.$store.state.equipment.equipmentTypes.length) {
-        this.$store.dispatch('fetchEquipmentTypes')
-      }
+    mounted() {
+      this.initForm()
     },
     methods: {
+      ...mapActions({
+        fetchEquipmentTypes: EQUIPMENT_MODULE.FETCH_EQUIPMENT_TYPE_DATA
+      }),
+      async initForm() {
+        if(!this.equipmentTypes.data.length) {
+          await this.fetchEquipmentTypes()
+        }
+      },
       removeItem() {
         this.$emit('removeItem', this.item)
       },
       changeType() {
         this.$emit('changeItem', {...this.item, equipment_id: this.selectedTypeID})
-        this.selectedType = this.equipmentTypes.find(i=>i.id === this.selectedTypeID)
+        this.selectedType = this.equipmentTypes.data.find(i=>i.id === this.selectedTypeID)
       }
     }
   }

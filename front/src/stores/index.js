@@ -1,12 +1,14 @@
-import { createStore } from "vuex";
-import auth from "./auth.module";
-import equipment from "./equipment.module";
+import {createStore} from "vuex";
+import auth from "./modules/authModule";
+import equipment from './modules/equipmentModule'
+import alert from './modules/alertModule'
 
 const store = createStore({
   modules: {
+    equipment,
     auth,
-    equipment
+    alert
   }
 });
 
-export default store;
+export default store
