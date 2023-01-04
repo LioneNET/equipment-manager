@@ -14,3 +14,8 @@
 .login-place .valid-filed {
   min-height: 70px;
 }
+.item-overflow {
+  max-height: calc(100vh - 150px);
+  overflow: hidden;
+  overflow-y: auto;
+}

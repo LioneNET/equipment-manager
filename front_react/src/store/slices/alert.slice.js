@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {ALERT_MODULE} from '../const'
-import {actions} from "./index";
 
 const initialState = {
   alerts: {},

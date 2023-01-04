@@ -8,12 +8,25 @@ const authHeader = token() ? {Authorization: 'Bearer ' + token()} : {}
 
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: process.env.REACT_APP_API_URL || 'localhost',
   headers: {
     Accept: "application/json",
     ...authHeader
   }
 })
+
+const findErrorText = object => {
+  if (typeof object == "string") return object;
+  for(const i in object) {
+    if(object[i] !== null && typeof object[i] === 'object') {
+      return findErrorText(object[i])
+    } else if(typeof object[i] === 'string') {
+      return object[i]
+    }
+  }
+  return null
+}
+
 
 const apiLoader = async (action) => {
   try {
@@ -28,7 +41,7 @@ const apiLoader = async (action) => {
       store.dispatch(actions[ALERT_MODULE.ALERT_ADD_ACTION]({
         id: Date.now(),
         duration: 3000,
-        message: error.response.data.message,
+        message: findErrorText(error.response.data),
         type: 'alert-danger'
       }))
     }

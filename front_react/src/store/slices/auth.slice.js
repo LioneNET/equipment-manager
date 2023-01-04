@@ -15,6 +15,14 @@ const asyncLogin = createAsyncThunk(AUTH_MODULE.POST_AUTH_LOGIN_ACTION, async (d
   return resp.data
 })
 
+const asyncLogout = createAsyncThunk(AUTH_MODULE.POST_AUTH_LOGOUT_ACTION, async (data) => {
+  let resp = {};
+  await apiLoader(async () => {
+    resp = await api.post('logout')
+  })
+  return resp.data
+})
+
 const slice = createSlice({
   name: AUTH_MODULE.NAME,
   initialState,
@@ -34,8 +42,13 @@ const slice = createSlice({
             window.location.href = '/'
           }
         })
-        .addCase(asyncLogin.rejected, (state) => {
-          state.isLoading = false
+        .addCase(asyncLogout.pending, (state) => {
+          state.isLoading = true;
+        })
+        .addCase(asyncLogout.fulfilled, (state, action) => {
+          state.isLoading = false;
+          localStorage.removeItem('token')
+          window.location.href = '/'
         })
   },
 });
@@ -44,7 +57,8 @@ const authSlice = {
   name: AUTH_MODULE.NAME,
   actions: {
     ...slice.actions,
-    [AUTH_MODULE.POST_AUTH_LOGIN_ACTION]: asyncLogin
+    [AUTH_MODULE.POST_AUTH_LOGIN_ACTION]: asyncLogin,
+    [AUTH_MODULE.POST_AUTH_LOGOUT_ACTION]: asyncLogout,
   },
   reducer: slice.reducer,
   states: {

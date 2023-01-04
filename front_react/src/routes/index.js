@@ -1,5 +1,10 @@
 import Home from "../pages/Home";
 import Login from "../pages/Login";
+import EquipmentSearch from "../components/equipment/EquipmentSearch";
+import {Navigate, Route} from "react-router-dom";
+import React from "react";
+import EquipmentForm from "../components/equipment/EquipmentForm";
+import EquipmentEdit from "../components/equipment/EquipmentEdit";
 const getToken = () => localStorage.getItem('token')
 
 const isAuth = (data) => {
@@ -28,6 +33,33 @@ const routes = isAuth([
       authRequired: true
     },
     children: [
+      {
+        path: 'search',
+        component: <EquipmentSearch />,
+        meta: {
+          authRequired: true
+        },
+        children: [
+        ]
+      },
+      {
+        path: 'equipment',
+        component: <EquipmentForm />,
+        meta: {
+          authRequired: true
+        },
+        children: [
+        ]
+      },
+      {
+        path: 'equipment/:id',
+        component: <EquipmentEdit />,
+        meta: {
+          authRequired: true
+        },
+        children: [
+        ]
+      }
     ]
   },
   {
@@ -39,8 +71,27 @@ const routes = isAuth([
     children: [
     ]
   },
+  {
+    path: '*',
+    component: <Navigate to={getToken() ? '/search' : '/login'} />,
+    meta: {
+      authRequired: false
+    },
+    children: [
+    ]
+  },
 ])
 
-const defaultRoute = getToken() ? '/' : '/login'
+const routeTree = data => {
+  return data.map(route => {
+    return (
+        <Route id={route.name} path={route.path} element={route.component} key={route.path}>
+          {
+            route.children.length ? routeTree(route.children) : null
+          }
+        </Route>
+    )
+  })
+}
 
-export {routes, defaultRoute}
+export {routeTree, routes}
