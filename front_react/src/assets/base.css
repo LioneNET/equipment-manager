@@ -1,0 +1,21 @@
+:root {
+  
+}
+
+.my-card {
+  max-width: 500px;
+  margin: 10vh auto 0;
+}
+
+.login-place {
+  max-width: 530px;
+  margin: 10vh auto 0;
+}
+.login-place .valid-filed {
+  min-height: 70px;
+}
+.item-overflow {
+  max-height: calc(100vh - 150px);
+  overflow: hidden;
+  overflow-y: auto;
+}
