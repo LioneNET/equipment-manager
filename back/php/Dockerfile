@@ -1,7 +1,5 @@
 # FROM php:8.0-apache
 FROM php:8.1.0-fpm
-# необязат. строка
-MAINTAINER Gorbunov Konstantin
 
 WORKDIR /var/www/laravel_docker
 RUN apt update \
