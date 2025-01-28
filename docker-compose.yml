@@ -8,8 +8,8 @@ services:
     ports:
       - 8080:80
     volumes:
-      - ./src:/var/www/laravel_docker
-      - ./nginx:/etc/nginx/conf.d
+      - ./back/src:/var/www/laravel_docker
+      - ./back/nginx:/etc/nginx/conf.d
       - ./log:/var/log/nginx
     links:
       - php-fpm
@@ -19,13 +19,13 @@ services:
   php-fpm:
     container_name: equip-php-fpm
     build:
-      context: ./php
+      context: back/php
     restart: unless-stopped
     ports:
       - "9000:9000"
     working_dir: /var/www/laravel_docker
     volumes:
-      - ./src:/var/www/laravel_docker
+      - ./back/src:/var/www/laravel_docker
     networks:
       - others_my-net
       
@@ -52,10 +52,31 @@ services:
       - 8030:8025
     networks:
       - others_my-net
+
+  nodejs_react:
+    image: node:16.14.0-alpine
+    container_name: nodejs_react
+    volumes:
+      - ./front_react:/usr/src/app
+    working_dir: /usr/src/app
+    ports:
+      - 3006:3006
+    tty: true
+    stdin_open: true
+
+  nodejs_vue:
+    image: node:18.0.0-alpine
+    container_name: nodejs_vue
+    volumes:
+      - ./front_vue:/usr/src/app
+    working_dir: /usr/src/app
+    ports:
+      - 3000:3000
+    tty: true
       
 networks:
   others_my-net:
-    external: true
+    driver: bridge
     
 volumes:
   equip-mysql-data:
