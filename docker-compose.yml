@@ -54,7 +54,7 @@ services:
       - others_my-net
 
   nodejs_react:
-    image: node:16.14.0-alpine
+    image: node:16.14.0
     container_name: nodejs_react
     volumes:
       - ./front_react:/usr/src/app
@@ -65,7 +65,7 @@ services:
     stdin_open: true
 
   nodejs_vue:
-    image: node:18.0.0-alpine
+    image: node:18.0.0
     container_name: nodejs_vue
     volumes:
       - ./front_vue:/usr/src/app
