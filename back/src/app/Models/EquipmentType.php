@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Модель по работе с типоми оборудований
+ * Модель по работе с типами оборудований
+ *
+ * @property string $name
+ * @property string $serial_mask
  */
 class EquipmentType extends Model
 {

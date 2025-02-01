@@ -7,44 +7,71 @@ use App\Http\Requests\EquipmentUpdateRequest;
 use App\Http\Resources\EquipmentResource;
 use App\Models\Equipment;
 use App\Services\Equipment\EquipmentService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
 /**
  * Контроллер по работе с оборудованием
  * добавление/удаление/обновление/создание
  */
 class EquipmentsController extends Controller
 {
-  /** запрос с параметрами id, serial_number, note, equipment_type */
-  public function index(Request $request)
-  {
-    $equipmentService = new EquipmentService();
-    return EquipmentResource::collection($equipmentService->getEquipments($request));
-  }
+    /**
+     * Запрос с параметрами id, serial_number, note, equipment_type
+     * @param Request $request
+     * @return AnonymousResourceCollection
+     */
+    public function index(Request $request): AnonymousResourceCollection
+    {
+        $equipmentService = new EquipmentService();
+        return EquipmentResource::collection($equipmentService->getEquipments($request));
+    }
 
-  /** запрос по id */
-  public function show(Request $request)
-  {
-    return new EquipmentResource(Equipment::find($request->route('id')));
-  }
+    /**
+     * Получение конкретного оборудования
+     *
+     * @param Equipment $equipment
+     * @return EquipmentResource
+     */
+    public function show(Equipment $equipment): EquipmentResource
+    {
+        return new EquipmentResource($equipment);
+    }
 
-  /**доавлить оборудование */
-  public function addEquipment(EquipmentRequest $request)
-  {
-    $equipmentService = new EquipmentService();
-    return new EquipmentResource($equipmentService->createEquipments($request));
-  }
+    /**
+     * Добавить оборудование
+     *
+     * @param EquipmentRequest $request
+     * @param EquipmentService $equipmentService
+     * @return EquipmentResource
+     */
+    public function store(EquipmentRequest $request, EquipmentService $equipmentService): EquipmentResource
+    {
+        return new EquipmentResource($equipmentService->createEquipments($request->validated()));
+    }
 
-  /**обнвить оборудование */
-  public function updateEquipment(EquipmentUpdateRequest $request)
-  {
-    $equipmentService = new EquipmentService();
-    return new EquipmentResource($equipmentService->updateEquipments($request));
-  }
+    /**
+     * Обновить оборудование
+     *
+     * @param EquipmentUpdateRequest $request
+     * @param Equipment $equipment
+     * @return JsonResponse
+     */
+    public function update(EquipmentUpdateRequest $request, Equipment $equipment): JsonResponse
+    {
+        $equipment->update($request->validated());
+        return response()->json(['success' => 'Успешно сохранено!'], 200, [], JSON_UNESCAPED_UNICODE);
+    }
 
-  /**удалить оборудование */
-  public function deleteEquipment(Request $request)
-  {
-    $equipmentService = new EquipmentService();
-    return new EquipmentResource($equipmentService->deleteEquipment($request));
-  }
+    /**
+     * Удалить оборудование
+     * @param Equipment $equipment
+     * @return JsonResponse
+     */
+    public function destroy(Equipment $equipment): JsonResponse
+    {
+        $equipment->delete();
+        return response()->json(['success' => 'Успешно удалено!'], 200, [], JSON_UNESCAPED_UNICODE);
+    }
 }
