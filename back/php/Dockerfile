@@ -1,42 +1,44 @@
-# FROM php:8.0-apache
-FROM php:8.1.0-fpm
+FROM php:8.2-fpm
+
+EXPOSE 9000
 
 WORKDIR /var/www/laravel_docker
-RUN apt update \
-        && apt install -y \
-            git \
-            nano \
-            g++ \
-            libicu-dev \
-            libpq-dev \
-            libzip-dev \
-            zip \
-            zlib1g-dev \
-            libldap2-dev -y \
-	    libpng-dev \
-            && rm -rf /var/lib/apt/lists/* \
-        && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \     
-        && docker-php-ext-install \
-            intl \
-            pcntl \
-            zip \
-            gd \
-            opcache \
-            pdo \
-            pdo_pgsql \
-            pgsql \
-            mysqli \
-            pdo_mysql \
-            ldap \
-        && docker-php-ext-enable \
-            pdo_mysql \
-            pcntl \
-            zip \
-            gd
-            # ldap
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-# Добавим свой php.ini, можем в нем определять свои значения конфига
-ADD php.ini /usr/local/etc/php/conf.d/40-custom.ini
+
+# Установка необходимых зависимостей для расширений PHP
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libicu-dev \
+        libpq-dev \
+        libzip-dev \
+        zlib1g-dev \
+        libpng-dev && \
+    docker-php-ext-install \
+        intl \
+        pcntl \
+        zip \
+        gd \
+        opcache \
+        pdo \
+        pdo_pgsql \
+        pgsql > /dev/null && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
+# ADD php.ini /usr/local/etc/php/conf.d/40-custom.ini
 ADD . /var/www/laravel_docker
-RUN chown -R www-data:www-data /var/www/laravel_docker
+# RUN chown -R www-data:www-data /var/www/laravel_docker
+
+# Создание пользователя с UID/GID из аргументов сборки
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+# Создание группы с нужным GID (если не совпадает со стандартным www-data)
+RUN groupadd --gid $GROUP_ID appgroup
+RUN useradd --uid $USER_ID --gid $GROUP_ID --shell /bin/bash --create-home appuser
+
+# Добавление пользователя в группу www-data (обычно GID 33 в Ubuntu/Debian)
+RUN usermod -aG www-data appuser
+RUN su appuser
 CMD ["php-fpm"]

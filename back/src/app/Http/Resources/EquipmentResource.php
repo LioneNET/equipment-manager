@@ -18,14 +18,6 @@ class EquipmentResource extends JsonResource
    */
   public function toArray($request)
   {
-    if ($this->resource == null) {
-      return [];
-    } else if (is_array($this->resource)) {
-      //чтобы не ранять фронт
-      self::$wrap = '';
-      return $this->resource;
-    }
-
     return [
       'id' => $this->id,
       'equipment_id' => $this->equipment_id,
