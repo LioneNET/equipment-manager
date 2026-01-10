@@ -24,8 +24,9 @@ class EquipmentsController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $equipmentService = new EquipmentService();
-        return EquipmentResource::collection($equipmentService->getEquipments($request));
+        return EquipmentResource::collection(
+            Equipment::filter($request)->paginate($request->input('limit'))
+        );
     }
 
     /**
@@ -36,7 +37,7 @@ class EquipmentsController extends Controller
      */
     public function show(Equipment $equipment): EquipmentResource
     {
-        return new EquipmentResource($equipment);
+        return EquipmentResource::make($equipment);
     }
 
     /**
@@ -44,11 +45,13 @@ class EquipmentsController extends Controller
      *
      * @param EquipmentRequest $request
      * @param EquipmentService $equipmentService
-     * @return EquipmentResource
+     * @return JsonResponse
      */
-    public function store(EquipmentRequest $request, EquipmentService $equipmentService): EquipmentResource
+    public function store(EquipmentRequest $request, EquipmentService $equipmentService): JsonResponse
     {
-        return new EquipmentResource($equipmentService->createEquipments($request->validated()));
+        return response()->json(
+            $equipmentService->createEquipments($request->validated()), 200, [], JSON_UNESCAPED_UNICODE
+        );
     }
 
     /**
