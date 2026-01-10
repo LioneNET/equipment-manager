@@ -3,16 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\EquipmentTypeResource;
-use App\Services\Equipment\EquipmentTypeService;
+use App\Models\EquipmentType;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * Контроллер по работе с типами оборудования
- * поиск по ключам 
  */
 class EquipmentsTypeController extends Controller
 {
-    public function index(Request $request, EquipmentTypeService $equipmentTypeService ) {
-      return EquipmentTypeResource::collection($equipmentTypeService->getEquipments($request));
+    /**
+     * @param Request $request
+     * @return AnonymousResourceCollection
+     */
+    public function index(Request $request): AnonymousResourceCollection
+    {
+      return EquipmentTypeResource::collection(
+          EquipmentType::filter($request)->paginate($request->input('limit'))
+      );
     }
 }
